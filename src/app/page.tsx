@@ -475,24 +475,16 @@ export default function PricingPage() {
 
           {/* Right Side: Shield & No Charges */}
           <div className="flex items-start sm:items-center gap-4 sm:gap-6 md:gap-8 max-w-md flex-shrink-0">
-            {/* Outline Shield Icon */}
-            <div className="w-10 h-12 sm:w-[56px] sm:h-[65px] flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 56 65" className="w-full h-full" fill="none">
-                <path
-                  d="M28 4L5 14V34C5 48 15 58 28 62C41 58 51 48 51 34V14L28 4Z"
-                  stroke="#2D5F3F"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M20 32L26 38L37 26"
-                  stroke="#2D5F3F"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            {/* Shield Icon */}
+            <div className="w-10 h-12 sm:w-[56px] sm:h-[65px] flex items-center justify-center flex-shrink-0 relative">
+              <Image
+                src="/payment-verify-UserLogo/no-charge-during-freeTrail.png"
+                alt="No Charges During Your Trial"
+                width={56}
+                height={65}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
 
             {/* Text */}
