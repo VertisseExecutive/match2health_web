@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,20 +24,26 @@ export default function PaymentDetailsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiNotice, setApiNotice] = useState<string | null>(null);
 
-  // Format Card Number (adds space every 4 digits)
+  // Prefetch congratulations page for instant routing
+  useEffect(() => {
+    router.prefetch("/congratulations");
+  }, [router]);
+
+  // Format Card Number (adds space every 4 digits smoothly)
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, "").slice(0, 16);
     const formatted = raw.replace(/(\d{4})(?=\d)/g, "$1 ");
     setCardNumber(formatted);
   };
 
-  // Format Expiry Date MM / YY
+  // Format Expiry Date MM / YY cleanly
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let raw = e.target.value.replace(/\D/g, "").slice(0, 4);
-    if (raw.length >= 3) {
-      raw = `${raw.slice(0, 2)} / ${raw.slice(2, 4)}`;
+    const raw = e.target.value.replace(/\D/g, "").slice(0, 4);
+    if (raw.length <= 2) {
+      setExpiryDate(raw);
+    } else {
+      setExpiryDate(`${raw.slice(0, 2)} / ${raw.slice(2, 4)}`);
     }
-    setExpiryDate(raw);
   };
 
   // Format CVV (3-4 digits)
@@ -76,17 +82,17 @@ export default function PaymentDetailsPage() {
         const notice =
           "Live Stripe credentials pending on backend. Continuing with trial activation.";
         setApiNotice(notice);
-        showToast(notice, "info");
       }
     }
 
     setTimeout(() => {
       setIsSubmitting(false);
       showToast("Trial activated successfully!", "success");
-      router.push("/congratulations");
+      setTimeout(() => {
+        router.push("/congratulations");
+      }, 650);
     }, 600);
   };
-
 
   return (
     <div className="min-h-screen bg-white text-black flex flex-col font-sans">
@@ -94,18 +100,18 @@ export default function PaymentDetailsPage() {
       <header className="w-full border-b border-black/15 bg-white sticky top-0 z-30">
         <div className="max-w-[1340px] mx-auto px-4 sm:px-8 md:px-12 h-[68px] sm:h-[75px] flex items-center justify-between gap-2">
           {/* Logo & Company Name */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-4 hover:opacity-95 transition-opacity min-w-0">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-4 hover:opacity-90 transition-opacity min-w-0">
             <div className="relative w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 flex-shrink-0">
               <Image
                 src="/LogoSignet.png"
-                alt="Medicare Hospital"
+                alt="Medicare Hospitals"
                 fill
                 className="object-contain"
                 priority
               />
             </div>
             <span className="font-bold text-base sm:text-xl md:text-[22px] tracking-[0.03em] sm:tracking-[0.05em] text-[#171717] truncate">
-              Medicare Hospital
+              Medicare Hospitals
             </span>
           </Link>
 
@@ -131,7 +137,7 @@ export default function PaymentDetailsPage() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-10 md:py-12">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-10 md:py-12 page-smooth-enter">
         <div className="w-full max-w-[735px] flex flex-col items-center">
           {/* Header Row with Back Button */}
           <div className="w-full relative flex items-center justify-center mb-5 sm:mb-6">
@@ -162,7 +168,9 @@ export default function PaymentDetailsPage() {
                 Payment Details
               </h1>
               <p className="text-sm sm:text-lg md:text-[22px] font-medium text-black/70 tracking-[0.01em] mt-1.5 sm:mt-2">
-                Enter your card details to start free trial
+                {selectedPlan
+                  ? `Plan: ${selectedPlan.range} Employees (${selectedPlan.price}${selectedPlan.billingCycle})`
+                  : "Enter your card details to start free trial"}
               </p>
             </div>
           </div>
@@ -170,7 +178,7 @@ export default function PaymentDetailsPage() {
           {/* Card Logos Row */}
           <div className="flex items-center justify-center gap-5 sm:gap-8 md:gap-10 mb-6 sm:mb-8 px-2">
             {/* VISA */}
-            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center">
+            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center transition-transform duration-200 hover:scale-105">
               <Image
                 src="/payment-details/visa.png"
                 alt="Visa"
@@ -182,7 +190,7 @@ export default function PaymentDetailsPage() {
             </div>
 
             {/* Mastercard */}
-            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center">
+            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center transition-transform duration-200 hover:scale-105">
               <Image
                 src="/payment-details/mastercard.png"
                 alt="Mastercard"
@@ -194,7 +202,7 @@ export default function PaymentDetailsPage() {
             </div>
 
             {/* AMEX */}
-            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center">
+            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center transition-transform duration-200 hover:scale-105">
               <Image
                 src="/payment-details/Amex.png"
                 alt="American Express"
@@ -206,7 +214,7 @@ export default function PaymentDetailsPage() {
             </div>
 
             {/* PayPal */}
-            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center">
+            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center transition-transform duration-200 hover:scale-105">
               <Image
                 src="/payment-details/paypal.png"
                 alt="PayPal"
@@ -236,7 +244,7 @@ export default function PaymentDetailsPage() {
                 Cardholder Name
               </label>
               <div
-                className="w-full h-[54px] sm:h-[60px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 gap-3 sm:gap-4 transition-all focus-within:ring-2 focus-within:ring-[#215935]"
+                className="w-full h-[54px] sm:h-[60px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 gap-3 sm:gap-4 interactive-input focus-within:ring-2 focus-within:ring-[#215935]"
                 style={{
                   border: "1.72px solid rgba(45, 95, 63, 0.25)",
                   boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
@@ -276,7 +284,7 @@ export default function PaymentDetailsPage() {
                 Card Number
               </label>
               <div
-                className="w-full h-[54px] sm:h-[60px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 gap-3 sm:gap-4 transition-all focus-within:ring-2 focus-within:ring-[#215935]"
+                className="w-full h-[54px] sm:h-[60px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 gap-3 sm:gap-4 interactive-input focus-within:ring-2 focus-within:ring-[#215935]"
                 style={{
                   border: "1.72px solid rgba(45, 95, 63, 0.25)",
                   boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
@@ -305,7 +313,7 @@ export default function PaymentDetailsPage() {
                   onChange={handleCardNumberChange}
                   className="w-full h-full text-sm sm:text-[17.5px] font-medium text-black placeholder:text-black/60 bg-transparent focus:outline-none tracking-wider"
                 />
-                {/* Eye / Security Icon */}
+                {/* Security Shield Icon */}
                 <div className="text-black/60 p-1 flex-shrink-0">
                   <svg
                     className="w-5 h-5"
@@ -317,12 +325,7 @@ export default function PaymentDetailsPage() {
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                     />
                   </svg>
                 </div>
@@ -340,7 +343,7 @@ export default function PaymentDetailsPage() {
                   Expiry Date
                 </label>
                 <div
-                  className="w-full h-[52px] sm:h-[58px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 transition-all focus-within:ring-2 focus-within:ring-[#215935]"
+                  className="w-full h-[52px] sm:h-[58px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 interactive-input focus-within:ring-2 focus-within:ring-[#215935]"
                   style={{
                     border: "1.72px solid rgba(45, 95, 63, 0.25)",
                     boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
@@ -368,7 +371,7 @@ export default function PaymentDetailsPage() {
                   CVV
                 </label>
                 <div
-                  className="w-full h-[52px] sm:h-[58px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 transition-all focus-within:ring-2 focus-within:ring-[#215935]"
+                  className="w-full h-[52px] sm:h-[58px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 interactive-input focus-within:ring-2 focus-within:ring-[#215935]"
                   style={{
                     border: "1.72px solid rgba(45, 95, 63, 0.25)",
                     boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
@@ -437,7 +440,7 @@ export default function PaymentDetailsPage() {
                   </svg>
                 </span>
                 <span className="text-sm sm:text-[16.5px] font-medium tracking-[0.03em] sm:tracking-[0.05em] text-black/80">
-                  Billing starts automatically after your 30-day trial ends.
+                  Billing starts automatically after your trial ends.
                 </span>
               </div>
 
@@ -495,9 +498,35 @@ export default function PaymentDetailsPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-[54px] sm:h-[60px] bg-[#215935] hover:bg-[#1a472a] active:scale-[0.99] text-white font-bold text-lg sm:text-[21px] tracking-[0.05em] rounded-[9.6px] shadow-[0px_4px_5px_rgba(0,0,0,0.3)] transition-all cursor-pointer flex items-center justify-center mt-2"
+              className="w-full h-[54px] sm:h-[60px] bg-[#215935] hover:bg-[#1a472a] disabled:opacity-85 active:scale-[0.99] text-white font-bold text-lg sm:text-[21px] tracking-[0.05em] rounded-[9.6px] shadow-[0px_4px_5px_rgba(0,0,0,0.3)] transition-all cursor-pointer flex items-center justify-center gap-2.5 mt-2 btn-spring"
             >
-              {isSubmitting ? "Activating Trial..." : "Activate Free Trial"}
+              {isSubmitting ? (
+                <>
+                  <svg
+                    className="animate-spin w-5 h-5 text-white flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                    />
+                    <path
+                      className="opacity-95"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                  <span>Activating Free Trial...</span>
+                </>
+              ) : (
+                "Activate Free Trial"
+              )}
             </button>
           </form>
         </div>

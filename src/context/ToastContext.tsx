@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, useRef, ReactNode } from "react";
 
 export type ToastType = "loading" | "success" | "error" | "info";
 
@@ -23,21 +23,38 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<Toast | null>(null);
+  const [isExiting, setIsExiting] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const exitTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const hideToast = useCallback(() => {
-    setToast(null);
+    setIsExiting(true);
+    if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
+    exitTimerRef.current = setTimeout(() => {
+      setToast(null);
+      setIsExiting(false);
+    }, 240);
   }, []);
 
   const showToast = useCallback(
     (message: string, type: ToastType = "info", options?: ToastOptions) => {
+      // Clear any pending timers
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
+
+      setIsExiting(false);
       const id = Date.now().toString();
       setToast({ id, message, type });
 
-      // Automatically dismiss non-loading toasts
+      // Automatically dismiss non-loading toasts after duration
       if (type !== "loading") {
-        const timeout = options?.duration ?? 3500;
-        setTimeout(() => {
-          setToast((current) => (current?.id === id ? null : current));
+        const timeout = options?.duration ?? 3800;
+        timerRef.current = setTimeout(() => {
+          setIsExiting(true);
+          exitTimerRef.current = setTimeout(() => {
+            setToast((current) => (current?.id === id ? null : current));
+            setIsExiting(false);
+          }, 240);
         }, timeout);
       }
     },
@@ -54,10 +71,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           role="status"
           aria-live="polite"
           aria-label="Notification"
-          className="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] pointer-events-auto transition-all duration-300 ease-out animate-in fade-in slide-in-from-top-4"
+          className={`fixed top-6 left-1/2 z-[9999] pointer-events-auto select-none ${
+            isExiting ? "toast-exit" : "toast-enter"
+          }`}
+          style={{ willChange: "transform, opacity" }}
         >
           <div
-            className={`flex items-center gap-3 px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl shadow-2xl backdrop-blur-md border text-sm sm:text-base font-semibold max-w-[92vw] sm:max-w-md ${
+            className={`flex items-center gap-3 px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.35)] backdrop-blur-xl border text-sm sm:text-base font-medium max-w-[92vw] sm:max-w-md ${
               toast.type === "loading"
                 ? "bg-[#111827]/95 text-white border-white/20"
                 : toast.type === "success"
@@ -92,7 +112,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             )}
 
             {toast.type === "success" && (
-              <div className="w-5 h-5 rounded-full bg-emerald-400 text-[#064e3b] flex items-center justify-center flex-shrink-0">
+              <div className="w-5 h-5 rounded-full bg-emerald-400 text-[#064e3b] flex items-center justify-center flex-shrink-0 shadow-sm">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
                   <path
                     fillRule="evenodd"
@@ -104,27 +124,27 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             )}
 
             {toast.type === "error" && (
-              <div className="w-5 h-5 rounded-full bg-rose-400 text-[#7f1d1d] flex items-center justify-center flex-shrink-0 font-bold text-xs">
+              <div className="w-5 h-5 rounded-full bg-rose-400 text-[#7f1d1d] flex items-center justify-center flex-shrink-0 font-bold text-xs shadow-sm">
                 ✕
               </div>
             )}
 
             {toast.type === "info" && (
-              <div className="w-5 h-5 rounded-full bg-sky-400 text-[#0c4a6e] flex items-center justify-center flex-shrink-0 font-bold text-xs">
+              <div className="w-5 h-5 rounded-full bg-sky-400 text-[#0c4a6e] flex items-center justify-center flex-shrink-0 font-bold text-xs shadow-sm">
                 i
               </div>
             )}
 
             {/* Message */}
-            <span className="leading-snug flex-1">{toast.message}</span>
+            <span className="leading-snug flex-1 text-white tracking-wide">{toast.message}</span>
 
             {/* Dismiss Button (for non-loading) */}
             {toast.type !== "loading" && (
               <button
                 type="button"
                 onClick={hideToast}
-                className="opacity-70 hover:opacity-100 p-1 -mr-1 transition-opacity text-white text-base leading-none cursor-pointer"
-                aria-label="Dismiss toast"
+                className="opacity-60 hover:opacity-100 p-1 -mr-1 transition-opacity text-white text-base leading-none cursor-pointer"
+                aria-label="Dismiss notification"
               >
                 ✕
               </button>
