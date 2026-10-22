@@ -7,12 +7,14 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { loginStart, loginSuccess, loginFailure } from "../../redux/slices/authSlice";
 import { loginUser } from "../../services/api";
+import { useToast } from "../../context/ToastContext";
 
 export default function VerifyAccountPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const selectedPlan = useAppSelector((state) => state.plan.selectedPlan);
   const auth = useAppSelector((state) => state.auth);
+  const { showToast } = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,11 +37,14 @@ export default function VerifyAccountPage() {
     const cleanPassword = password.trim();
 
     if (!cleanEmail || !cleanPassword) {
-      setLocalError("Please enter both email and password.");
+      const msg = "Please enter both email and password.";
+      setLocalError(msg);
+      showToast(msg, "error");
       return;
     }
 
     dispatch(loginStart());
+    showToast("Verifying credentials with server...", "loading");
 
     try {
       const res = await loginUser(cleanEmail, cleanPassword);
@@ -52,9 +57,9 @@ export default function VerifyAccountPage() {
         })
       );
 
-      setSuccessMessage(
-        `✓ Account verified as ${res.user.role || "User"} (${res.user.email}). Redirecting...`
-      );
+      const msg = `✓ Account verified as ${res.user.role || "User"}. Redirecting...`;
+      setSuccessMessage(msg);
+      showToast(msg, "success");
 
       setTimeout(() => {
         router.push("/payment-details");
@@ -62,6 +67,7 @@ export default function VerifyAccountPage() {
     } catch (err: any) {
       const msg = err.message || "Login failed. Please check your credentials.";
       setLocalError(msg);
+      showToast(msg, "error");
       dispatch(loginFailure(msg));
     }
   };

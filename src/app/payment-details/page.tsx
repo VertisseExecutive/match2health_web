@@ -6,11 +6,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "../../redux/hooks";
 import { createCheckoutSession } from "../../services/api";
+import { useToast } from "../../context/ToastContext";
 
 export default function PaymentDetailsPage() {
   const router = useRouter();
   const selectedPlan = useAppSelector((state) => state.plan.selectedPlan);
   const auth = useAppSelector((state) => state.auth);
+  const { showToast } = useToast();
 
   const [cardholderName, setCardholderName] = useState(
     auth.user?.username || auth.user?.email?.split("@")[0] || ""
@@ -47,12 +49,13 @@ export default function PaymentDetailsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedToTerms) {
-      alert("Please agree to the Terms & Conditions and Privacy Policy.");
+      showToast("Please agree to the Terms & Conditions and Privacy Policy.", "error");
       return;
     }
 
     setIsSubmitting(true);
     setApiNotice(null);
+    showToast("Processing payment & activating trial...", "loading");
 
     // If logged in with token, hit Stripe Checkout API
     if (auth.token) {
@@ -64,20 +67,22 @@ export default function PaymentDetailsPage() {
         const res = await createCheckoutSession(planType, auth.token);
 
         if (res.data?.checkout_url) {
+          showToast("Redirecting to secure Stripe checkout...", "loading");
           window.location.href = res.data.checkout_url;
           return;
         }
       } catch (err: any) {
         console.warn("Stripe Checkout notice:", err?.message || err);
-        // Backend Stripe keys not yet configured (503 reason: not_configured)
-        setApiNotice(
-          "Notice: Live Stripe credentials are pending backend configuration. Continuing with instant trial activation."
-        );
+        const notice =
+          "Live Stripe credentials pending on backend. Continuing with trial activation.";
+        setApiNotice(notice);
+        showToast(notice, "info");
       }
     }
 
     setTimeout(() => {
       setIsSubmitting(false);
+      showToast("Trial activated successfully!", "success");
       router.push("/congratulations");
     }, 600);
   };
