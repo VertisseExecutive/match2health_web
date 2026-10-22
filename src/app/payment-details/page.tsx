@@ -137,10 +137,10 @@ export default function PaymentDetailsPage() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-10 md:py-12 page-smooth-enter">
-        <div className="w-full max-w-[735px] flex flex-col items-center">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 lg:py-10 page-smooth-enter">
+        <div className="w-full max-w-[480px] sm:max-w-[520px] xl:max-w-[560px] flex flex-col items-center">
           {/* Header Row with Back Button */}
-          <div className="w-full relative flex items-center justify-center mb-5 sm:mb-6">
+          <div className="w-full relative flex items-center justify-center mb-4 sm:mb-5">
             <button
               type="button"
               onClick={() => router.push("/verify-account")}
@@ -148,7 +148,7 @@ export default function PaymentDetailsPage() {
               title="Back to Verify Account"
             >
               <svg
-                className="w-6 h-6 sm:w-7 sm:h-7"
+                className="w-5 h-5 sm:w-6 sm:h-6"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.8"
@@ -163,11 +163,11 @@ export default function PaymentDetailsPage() {
             </button>
 
             {/* Title & Subtitle */}
-            <div className="text-center px-8 sm:px-12">
-              <h1 className="text-2xl sm:text-[30px] md:text-[32.6px] font-bold text-black leading-tight tracking-[0.02em]">
+            <div className="text-center px-6 sm:px-10">
+              <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-bold text-black leading-tight tracking-tight">
                 Payment Details
               </h1>
-              <p className="text-sm sm:text-lg md:text-[22px] font-medium text-black/70 tracking-[0.01em] mt-1.5 sm:mt-2">
+              <p className="text-xs sm:text-sm md:text-base font-medium text-black/70 tracking-normal mt-1 leading-snug">
                 {selectedPlan
                   ? `Plan: ${selectedPlan.range} Employees (${selectedPlan.price}${selectedPlan.billingCycle})`
                   : "Enter your card details to start free trial"}
@@ -236,23 +236,24 @@ export default function PaymentDetailsPage() {
             )}
 
             {/* Cardholder Name */}
-            <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col gap-1 w-full">
               <label
                 htmlFor="cardholderName"
-                className="text-base sm:text-[19.9px] font-medium text-black"
+                className="text-xs sm:text-[13px] md:text-sm font-medium text-black"
               >
                 Cardholder Name
               </label>
               <div
-                className="w-full h-[54px] sm:h-[60px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 gap-3 sm:gap-4 interactive-input focus-within:ring-2 focus-within:ring-[#215935]"
+                className="w-full h-11 sm:h-12 md:h-[50px] xl:h-[54px] bg-white flex items-center px-3.5 sm:px-4 md:px-5 gap-3 interactive-input"
                 style={{
-                  border: "1.72px solid rgba(45, 95, 63, 0.25)",
-                  boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
+                  borderRadius: "8px",
+                  border: "1.7px solid rgba(45, 95, 63, 0.5)",
+                  boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.12)",
                 }}
               >
                 {/* ID Card Icon */}
                 <svg
-                  className="w-5 h-5 text-[#545454] flex-shrink-0"
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#545454] flex-shrink-0"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -270,29 +271,30 @@ export default function PaymentDetailsPage() {
                   placeholder="Enter name on card"
                   value={cardholderName}
                   onChange={(e) => setCardholderName(e.target.value)}
-                  className="w-full h-full text-sm sm:text-[17.5px] font-medium text-black placeholder:text-black/60 bg-transparent focus:outline-none"
+                  className="w-full h-full text-xs sm:text-sm md:text-base font-medium text-black placeholder:text-[#919191] bg-transparent focus:outline-none"
                 />
               </div>
             </div>
 
             {/* Card Number */}
-            <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col gap-1 w-full">
               <label
                 htmlFor="cardNumber"
-                className="text-base sm:text-[19.9px] font-medium text-black"
+                className="text-xs sm:text-[13px] md:text-sm font-medium text-black"
               >
                 Card Number
               </label>
               <div
-                className="w-full h-[54px] sm:h-[60px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 gap-3 sm:gap-4 interactive-input focus-within:ring-2 focus-within:ring-[#215935]"
+                className="w-full h-11 sm:h-12 md:h-[50px] xl:h-[54px] bg-white flex items-center px-3.5 sm:px-4 md:px-5 gap-3 interactive-input"
                 style={{
-                  border: "1.72px solid rgba(45, 95, 63, 0.25)",
-                  boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
+                  borderRadius: "8px",
+                  border: "1.7px solid rgba(45, 95, 63, 0.5)",
+                  boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.12)",
                 }}
               >
                 {/* Credit Card Icon */}
                 <svg
-                  className="w-5 h-5 text-gray-500 flex-shrink-0"
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-gray-500 flex-shrink-0"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -311,12 +313,12 @@ export default function PaymentDetailsPage() {
                   placeholder="1234 5678 9012 3456"
                   value={cardNumber}
                   onChange={handleCardNumberChange}
-                  className="w-full h-full text-sm sm:text-[17.5px] font-medium text-black placeholder:text-black/60 bg-transparent focus:outline-none tracking-wider"
+                  className="w-full h-full text-xs sm:text-sm md:text-base font-medium text-black placeholder:text-[#919191] bg-transparent focus:outline-none tracking-wider"
                 />
                 {/* Security Shield Icon */}
                 <div className="text-black/60 p-1 flex-shrink-0">
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 sm:w-4.5 sm:h-4.5"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -333,20 +335,21 @@ export default function PaymentDetailsPage() {
             </div>
 
             {/* Expiry Date & CVV Row (Side-by-side on all screens) */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-5 w-full">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
               {/* Expiry Date */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
                 <label
                   htmlFor="expiryDate"
-                  className="text-base sm:text-[19.9px] font-medium text-black truncate"
+                  className="text-xs sm:text-[13px] md:text-sm font-medium text-black truncate"
                 >
                   Expiry Date
                 </label>
                 <div
-                  className="w-full h-[52px] sm:h-[58px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 interactive-input focus-within:ring-2 focus-within:ring-[#215935]"
+                  className="w-full h-11 sm:h-12 md:h-[50px] xl:h-[54px] bg-white flex items-center px-3.5 sm:px-4 md:px-5 interactive-input"
                   style={{
-                    border: "1.72px solid rgba(45, 95, 63, 0.25)",
-                    boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
+                    borderRadius: "8px",
+                    border: "1.7px solid rgba(45, 95, 63, 0.5)",
+                    boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.12)",
                   }}
                 >
                   <input
@@ -357,24 +360,25 @@ export default function PaymentDetailsPage() {
                     placeholder="MM / YY"
                     value={expiryDate}
                     onChange={handleExpiryChange}
-                    className="w-full h-full text-sm sm:text-[17.5px] font-medium text-black placeholder:text-black/60 bg-transparent focus:outline-none"
+                    className="w-full h-full text-xs sm:text-sm md:text-base font-medium text-black placeholder:text-[#919191] bg-transparent focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* CVV */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
                 <label
                   htmlFor="cvv"
-                  className="text-base sm:text-[19.9px] font-medium text-black"
+                  className="text-xs sm:text-[13px] md:text-sm font-medium text-black"
                 >
                   CVV
                 </label>
                 <div
-                  className="w-full h-[52px] sm:h-[58px] bg-white rounded-[7px] flex items-center px-4 sm:px-5 interactive-input focus-within:ring-2 focus-within:ring-[#215935]"
+                  className="w-full h-11 sm:h-12 md:h-[50px] xl:h-[54px] bg-white flex items-center px-3.5 sm:px-4 md:px-5 interactive-input"
                   style={{
-                    border: "1.72px solid rgba(45, 95, 63, 0.25)",
-                    boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
+                    borderRadius: "8px",
+                    border: "1.7px solid rgba(45, 95, 63, 0.5)",
+                    boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.12)",
                   }}
                 >
                   <input
@@ -385,7 +389,7 @@ export default function PaymentDetailsPage() {
                     placeholder="123"
                     value={cvv}
                     onChange={handleCvvChange}
-                    className="w-full h-full text-sm sm:text-[17.5px] font-medium text-black placeholder:text-black/60 bg-transparent focus:outline-none"
+                    className="w-full h-full text-xs sm:text-sm md:text-base font-medium text-black placeholder:text-[#919191] bg-transparent focus:outline-none"
                   />
                 </div>
               </div>
@@ -498,7 +502,7 @@ export default function PaymentDetailsPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-[54px] sm:h-[60px] bg-[#215935] hover:bg-[#1a472a] disabled:opacity-85 active:scale-[0.99] text-white font-bold text-lg sm:text-[21px] tracking-[0.05em] rounded-[9.6px] shadow-[0px_4px_5px_rgba(0,0,0,0.3)] transition-all cursor-pointer flex items-center justify-center gap-2.5 mt-2 btn-spring"
+              className="w-full h-11 sm:h-12 md:h-[50px] xl:h-[54px] bg-[#215935] hover:bg-[#1a472a] disabled:opacity-75 active:scale-[0.99] text-white font-bold text-sm sm:text-base md:text-lg rounded-full shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2.5 mt-2 btn-spring"
             >
               {isSubmitting ? (
                 <>

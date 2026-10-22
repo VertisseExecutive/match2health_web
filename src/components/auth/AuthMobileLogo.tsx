@@ -9,9 +9,9 @@ export const AuthMobileLogo: React.FC = () => {
   return (
     <div className="lg:hidden flex items-center justify-center gap-3 mb-6 sm:mb-8">
       <Link href="/" className="flex items-center gap-3" title="Return to Home">
-        <div className="relative w-[50px] h-[50px] flex-shrink-0">
+        <div className="relative w-[56px] h-[56px] sm:w-[64px] sm:h-[64px] flex-shrink-0">
           <Image
-            src="/LogoSignet.png"
+            src="/app-logo.png"
             alt="Match2Health Logo"
             fill
             className="object-contain"
@@ -19,7 +19,7 @@ export const AuthMobileLogo: React.FC = () => {
           />
         </div>
         <div className="flex flex-col">
-          <div className="text-[#004218] font-bold text-[24px] leading-tight tracking-tight flex items-center">
+          <div className="text-[#004218] font-bold text-[26px] sm:text-[30px] leading-tight tracking-tight flex items-center">
             <span>match</span>
             <span className="text-[#C97600]">2</span>
             <span>health</span>

@@ -58,11 +58,11 @@ export const AuthHeader: React.FC<AuthHeaderProps> = ({
       <AuthMobileLogo />
 
       {/* Header Headings (Figma Frame 518) */}
-      <div className="text-center w-full mb-6 sm:mb-9">
-        <h1 className="text-2xl sm:text-[34px] md:text-[36px] font-bold text-black tracking-tight leading-tight">
+      <div className="text-center w-full mb-4 sm:mb-5 lg:mb-6">
+        <h1 className="text-2xl sm:text-3xl lg:text-[32px] xl:text-[35px] font-bold text-black tracking-tight leading-tight">
           {title}
         </h1>
-        <p className="text-base sm:text-[22px] md:text-[25px] font-medium text-black/70 mt-1.5 sm:mt-2 tracking-normal">
+        <p className="text-sm sm:text-base lg:text-[18px] xl:text-[20px] font-medium text-black/70 mt-1 leading-snug">
           {subtitle}
         </p>
       </div>

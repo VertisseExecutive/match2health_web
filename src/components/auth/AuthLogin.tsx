@@ -1,30 +1,26 @@
+"use client";
+
 import React, { useState } from "react";
 import Link from "next/link";
 import { SocialLoginButtons } from "./SocialLoginButtons";
 
 interface AuthLoginProps {
-  /** Form submission handler */
-  onSubmit: (emailOrPhone: string, password: string, rememberMe: boolean) => Promise<void>;
-  /** Loading state during server verification */
-  isLoading: boolean;
-  /** Server or validation error message */
-  errorMessage: string | null;
-  /** Signup destination URL (defaults to /plans) */
+  onSubmit: (emailOrPhone: string, password: string) => Promise<void>;
+  isLoading?: boolean;
+  errorMessage?: string | null;
   signUpHref?: string;
-  /** Forgot password destination URL */
   forgotPasswordHref?: string;
 }
 
 /**
- * AuthLogin Component
- * Contains the email/phone field, password with toggle, remember me, submit button, and social logins.
- * Corresponds to Figma Frame 527, Frame 543, Frame 544, Frame 451, Frame 531.
+ * Screen 1: Login Form Component
+ * Matches Figma Frame 532 specifications with fluid responsive scaling
  */
 export const AuthLogin: React.FC<AuthLoginProps> = ({
   onSubmit,
-  isLoading,
-  errorMessage,
-  signUpHref = "/plans",
+  isLoading = false,
+  errorMessage = null,
+  signUpHref = "/signup",
   forgotPasswordHref = "/forgot-password",
 }) => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
@@ -32,17 +28,17 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(emailOrPhone, password, rememberMe);
+    await onSubmit(emailOrPhone, password);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-[578px] flex flex-col gap-5 sm:gap-6">
+    <form onSubmit={handleSubmit} className="w-full max-w-[460px] sm:max-w-[500px] xl:max-w-[540px] flex flex-col gap-3.5 sm:gap-4 xl:gap-4.5">
       {/* Error Alert Banner */}
       {errorMessage && (
-        <div className="w-full bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm sm:text-base font-medium flex items-center gap-2">
-          <svg className="w-5 h-5 flex-shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+        <div className="w-full bg-red-50 border border-red-200 text-red-700 px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2">
+          <svg className="w-4 h-4 flex-shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
             <path
               fillRule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -54,27 +50,28 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
       )}
 
       {/* Email or Phone Field (Figma Frame 543) */}
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-1 w-full">
         <label
           htmlFor="emailOrPhone"
-          className="text-base sm:text-[21px] font-medium text-black tracking-normal"
+          className="text-xs sm:text-[13px] md:text-sm font-medium text-black"
         >
           Email or Phone number
         </label>
         <div
-          className="w-full h-[58px] sm:h-[70px] bg-white rounded-[7.6px] flex items-center px-4 sm:px-6 gap-3 sm:gap-4 interactive-input"
+          className="w-full h-11 sm:h-12 md:h-[50px] xl:h-[54px] bg-white flex items-center px-3.5 sm:px-4 md:px-5 gap-3 interactive-input"
           style={{
-            border: "1.9px solid rgba(45, 95, 63, 0.6)",
-            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.25)",
+            borderRadius: "7.5px",
+            border: "1.7px solid rgba(45, 95, 63, 0.6)",
+            boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.12)",
           }}
         >
           {/* Envelope Icon */}
           <svg
-            className="w-5 h-5 sm:w-6 sm:h-6 text-black/65 flex-shrink-0"
+            className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-black/70 flex-shrink-0"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
@@ -88,33 +85,34 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
             placeholder="Enter email or phone number"
             value={emailOrPhone}
             onChange={(e) => setEmailOrPhone(e.target.value)}
-            className="w-full h-full text-base sm:text-[19px] font-medium text-black placeholder:text-[#919191] bg-transparent focus:outline-none"
+            className="w-full h-full text-xs sm:text-sm md:text-base font-medium text-black placeholder:text-[#919191] bg-transparent focus:outline-none"
           />
         </div>
       </div>
 
       {/* Password Field (Figma Frame 544) */}
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-1 w-full">
         <label
           htmlFor="password"
-          className="text-base sm:text-[21px] font-medium text-black tracking-normal"
+          className="text-xs sm:text-[13px] md:text-sm font-medium text-black"
         >
           Password
         </label>
         <div
-          className="w-full h-[58px] sm:h-[71px] bg-white rounded-[7.6px] flex items-center px-4 sm:px-6 gap-3 sm:gap-4 interactive-input"
+          className="w-full h-11 sm:h-12 md:h-[50px] xl:h-[54px] bg-white flex items-center px-3.5 sm:px-4 md:px-5 gap-3 interactive-input"
           style={{
-            border: "1.9px solid rgba(45, 95, 63, 0.6)",
-            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.25)",
+            borderRadius: "7.5px",
+            border: "1.7px solid rgba(45, 95, 63, 0.6)",
+            boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.12)",
           }}
         >
           {/* Lock Icon */}
           <svg
-            className="w-5 h-5 sm:w-6 sm:h-6 text-black/50 flex-shrink-0"
+            className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-black/60 flex-shrink-0"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
@@ -128,22 +126,22 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full h-full text-base sm:text-[19px] font-medium text-black placeholder:text-[#919191] bg-transparent focus:outline-none"
+            className="w-full h-full text-xs sm:text-sm md:text-base font-medium text-black placeholder:text-[#919191] bg-transparent focus:outline-none"
           />
           {/* Eye Toggle Icon */}
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="text-black/65 hover:text-black p-1 flex-shrink-0 cursor-pointer"
+            className="p-1 text-black/60 hover:text-black transition-colors cursor-pointer flex-shrink-0"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
               <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
+                className="w-4 h-4 sm:w-4.5 sm:h-4.5"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.2"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -152,11 +150,11 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
               </svg>
             ) : (
               <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
+                className="w-4 h-4 sm:w-4.5 sm:h-4.5"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.2"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -171,14 +169,14 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
       {/* Remember Me & Forgot Password Row (Figma Frame 525) */}
       <div className="flex items-center justify-between w-full pt-1">
         {/* Remember me (Frame 523) */}
-        <label className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none">
+        <label className="flex items-center gap-2 cursor-pointer select-none">
           <input
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="w-4 h-4 sm:w-5 sm:h-5 rounded-[3.3px] border-[1.65px] border-black text-[#215935] focus:ring-[#215935] cursor-pointer"
+            className="w-4 h-4 rounded border border-black/60 text-[#215935] cursor-pointer accent-[#215935]"
           />
-          <span className="text-sm sm:text-base md:text-[19px] font-medium text-black">
+          <span className="text-xs sm:text-[13px] md:text-sm font-medium text-black">
             Remember me
           </span>
         </label>
@@ -186,7 +184,7 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
         {/* Forgot Password (Frame 524) */}
         <Link
           href={forgotPasswordHref}
-          className="text-sm sm:text-base md:text-[19px] font-semibold text-[#215935] hover:underline"
+          className="text-xs sm:text-[13px] md:text-sm font-semibold text-[#215935] hover:underline"
         >
           Forgot Password?
         </Link>
@@ -197,12 +195,12 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full max-w-[444px] h-[52px] sm:h-[55.5px] bg-[#215935] hover:bg-[#1a472a] disabled:opacity-85 text-white font-bold text-base sm:text-[18px] tracking-[0.02em] rounded-[56.5px] shadow-[0px_5px_4px_rgba(0,0,0,0.3)] transition-all cursor-pointer flex items-center justify-center gap-2 btn-spring"
+          className="w-full max-w-[420px] h-11 sm:h-12 md:h-[50px] xl:h-[54px] bg-[#215935] hover:bg-[#1a472a] disabled:opacity-75 active:scale-[0.99] text-white font-bold text-sm sm:text-base md:text-lg rounded-full shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2 btn-spring"
         >
           {isLoading ? (
             <>
               <svg
-                className="animate-spin w-5 h-5 text-white"
+                className="animate-spin w-4 h-4 sm:w-5 sm:h-5 text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -234,7 +232,7 @@ export const AuthLogin: React.FC<AuthLoginProps> = ({
 
       {/* Don't have an account? Sign Up (Figma Frame 531) */}
       <div className="w-full text-center pt-2">
-        <span className="text-base sm:text-xl md:text-[22px] font-medium text-black">
+        <span className="text-xs sm:text-sm md:text-base font-medium text-black">
           Don’t have an account?{" "}
           <Link href={signUpHref} className="font-bold text-[#215935] hover:underline">
             Sign Up

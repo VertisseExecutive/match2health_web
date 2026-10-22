@@ -74,8 +74,8 @@ export default function LoginPage() {
       <AuthHeroBanner />
 
       {/* Right Column: Interactive Login Container */}
-      <main className="flex-1 w-full min-h-screen flex flex-col justify-center items-center px-4 sm:px-8 md:px-12 py-8 sm:py-12 relative page-smooth-enter">
-        <div className="w-full max-w-[644px] flex flex-col items-center">
+      <main className="flex-1 w-full min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 xl:px-12 py-6 sm:py-8 lg:py-10 relative page-smooth-enter">
+        <div className="w-full max-w-[460px] sm:max-w-[500px] xl:max-w-[540px] flex flex-col items-center">
           {/* Header Component (Back button, mobile logo, title & subtitle) */}
           <AuthHeader />
 
@@ -84,7 +84,7 @@ export default function LoginPage() {
             onSubmit={handleLogin}
             isLoading={auth.isLoading}
             errorMessage={errorMessage}
-            signUpHref="/plans"
+            signUpHref="/signup"
             forgotPasswordHref="/forgot-password"
           />
         </div>
