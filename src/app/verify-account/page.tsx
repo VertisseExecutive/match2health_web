@@ -18,14 +18,31 @@ export default function VerifyAccountPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const fillHospitalCredentials = () => {
+    setEmail("Joshita1920@gmail.com");
+    setPassword("Test@123456");
+    setLocalError(null);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
+    setSuccessMessage(null);
+
+    const cleanEmail = email.trim();
+    const cleanPassword = password.trim();
+
+    if (!cleanEmail || !cleanPassword) {
+      setLocalError("Please enter both email and password.");
+      return;
+    }
+
     dispatch(loginStart());
 
     try {
-      const res = await loginUser(email, password);
+      const res = await loginUser(cleanEmail, cleanPassword);
 
       dispatch(
         loginSuccess({
@@ -35,12 +52,13 @@ export default function VerifyAccountPage() {
         })
       );
 
-      // Warning if not hospital/company, but still proceed
-      if (res.user.role !== "hospital" && res.user.role !== "company") {
-        console.warn("Account is " + res.user.role + ". Subscriptions are for company/hospital accounts.");
-      }
+      setSuccessMessage(
+        `✓ Account verified as ${res.user.role || "User"} (${res.user.email}). Redirecting...`
+      );
 
-      router.push("/payment-details");
+      setTimeout(() => {
+        router.push("/payment-details");
+      }, 700);
     } catch (err: any) {
       const msg = err.message || "Login failed. Please check your credentials.";
       setLocalError(msg);
@@ -112,6 +130,16 @@ export default function VerifyAccountPage() {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
                 <span>{localError}</span>
+              </div>
+            )}
+
+            {/* Success Message */}
+            {successMessage && (
+              <div className="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg text-sm sm:text-base font-semibold flex items-center gap-2">
+                <svg className="w-5 h-5 flex-shrink-0 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>{successMessage}</span>
               </div>
             )}
 
