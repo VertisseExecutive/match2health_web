@@ -17,7 +17,7 @@ export default function CongratulationsPage() {
       <header className="w-full border-b border-black/15 bg-white sticky top-0 z-30">
         <div className="max-w-[1340px] mx-auto px-4 sm:px-8 md:px-12 h-[68px] sm:h-[75px] flex items-center justify-between gap-2">
           {/* Logo & Company Name */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-4 hover:opacity-95 transition-opacity min-w-0">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-4 hover:opacity-90 transition-opacity min-w-0">
             <div className="relative w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 flex-shrink-0">
               <Image
                 src="/LogoSignet.png"
@@ -54,13 +54,13 @@ export default function CongratulationsPage() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-14">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-14 page-smooth-enter">
         <div className="w-full max-w-[580px] flex flex-col items-center text-center">
-          {/* Confetti & Success Checkmark Image */}
-          <div className="relative w-full max-w-[360px] sm:max-w-[420px] flex items-center justify-center mb-4">
+          {/* Confetti & Success Checkmark Image with Pop-In animation */}
+          <div className="relative w-full max-w-[360px] sm:max-w-[420px] flex items-center justify-center mb-4 celebration-pop">
             <Image
               src="/congs.png"
-              alt="Congratulations"
+              alt="Congratulations on activating your Medicare Hospitals subscription"
               width={500}
               height={221}
               className="w-full h-auto object-contain"
@@ -73,11 +73,15 @@ export default function CongratulationsPage() {
             Congratulations !
           </h1>
           <p className="text-base sm:text-xl font-medium text-black/70 mb-8 max-w-md leading-relaxed">
-            Your Premium Free Trial has been activated successfully.
+            Your Free Trial for{" "}
+            <span className="font-bold text-black">
+              {selectedPlan?.range ? `${selectedPlan.range} Employees` : "Medicare Hospitals"}
+            </span>{" "}
+            has been activated successfully.
           </p>
 
           {/* Features Card Box */}
-          <div className="w-full bg-white rounded-[16px] border border-black/15 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] p-6 sm:p-7 flex flex-col gap-4 text-left mb-8">
+          <div className="w-full bg-white rounded-[16px] border border-black/15 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] p-6 sm:p-7 flex flex-col gap-4 text-left mb-8 interactive-card">
             {/* Item 1 */}
             <div className="flex items-center gap-3.5">
               <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
@@ -92,7 +96,7 @@ export default function CongratulationsPage() {
                 </svg>
               </span>
               <span className="text-[17px] sm:text-[18px] font-medium text-black">
-                {selectedPlan?.trialText || "30-Day Free Trial Activated"}
+                {selectedPlan?.trialText || "14-Day Free Trial Activated"}
               </span>
             </div>
 
@@ -146,7 +150,7 @@ export default function CongratulationsPage() {
                 </svg>
               </span>
               <span className="text-[17px] sm:text-[18px] font-medium text-black">
-                Cancel Anytime
+                Cancel Anytime Before Renewal
               </span>
             </div>
           </div>
@@ -155,7 +159,7 @@ export default function CongratulationsPage() {
           <button
             type="button"
             onClick={() => router.push("/")}
-            className="w-full h-[56px] sm:h-[60px] bg-[#215935] hover:bg-[#1a472a] active:scale-[0.99] text-white font-bold text-lg sm:text-[21px] tracking-[0.05em] rounded-[9.6px] shadow-[0px_4px_5px_rgba(0,0,0,0.3)] transition-all cursor-pointer flex items-center justify-center mb-8"
+            className="w-full h-[56px] sm:h-[60px] bg-[#215935] hover:bg-[#1a472a] active:scale-[0.99] text-white font-bold text-lg sm:text-[21px] tracking-[0.05em] rounded-[9.6px] shadow-[0px_4px_5px_rgba(0,0,0,0.3)] transition-all cursor-pointer flex items-center justify-center mb-8 btn-spring"
           >
             Go to Dashboard
           </button>

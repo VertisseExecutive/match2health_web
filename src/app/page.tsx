@@ -117,8 +117,15 @@ export default function PricingPage() {
   const dispatch = useAppDispatch();
   const reduxSelectedPlan = useAppSelector((state) => state.plan.selectedPlan);
   const [selectedPlan, setLocalSelectedPlan] = useState<Plan | null>(null);
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+
+  // Prefetch verify-account for zero latency routing
+  React.useEffect(() => {
+    router.prefetch("/verify-account");
+  }, [router]);
 
   const handleSelectPlan = (plan: Plan) => {
+    setLoadingPlanId(plan.id);
     setLocalSelectedPlan(plan);
     dispatch(
       setSelectedPlan({
@@ -178,7 +185,7 @@ export default function PricingPage() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-[1340px] mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-10 flex flex-col items-center gap-8 sm:gap-10">
+      <main className="flex-1 w-full max-w-[1340px] mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-10 flex flex-col items-center gap-8 sm:gap-10 page-smooth-enter">
         {/* Title & Subtitle */}
         <div className="text-center max-w-3xl flex flex-col gap-2 sm:gap-2.5 px-2">
           <h1 className="text-2xl sm:text-[30px] md:text-[33px] font-bold tracking-[0.02em] leading-tight text-black">
@@ -194,7 +201,7 @@ export default function PricingPage() {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className="relative flex flex-col justify-between rounded-[11px] transition-transform duration-200 hover:-translate-y-1 shadow-[0px_2px_4px_rgba(0,0,0,0.25)] p-6 sm:p-7 md:p-8"
+              className="relative flex flex-col justify-between rounded-[11px] interactive-card shadow-[0px_2px_4px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 group"
               style={{
                 backgroundColor: plan.theme.cardBg,
                 border: `1px solid ${plan.theme.borderColor}`,
@@ -203,7 +210,7 @@ export default function PricingPage() {
             >
               {/* Most Popular Badge */}
               {plan.isMostPopular && (
-                <div className="absolute -top-[20px] sm:-top-[23px] left-1/2 -translate-x-1/2 z-10">
+                <div className="absolute -top-[20px] sm:-top-[23px] left-1/2 z-10 badge-pulse">
                   <span className="inline-flex items-center justify-center bg-[#FF9600] border border-[#B39200] text-white font-bold text-xs sm:text-[15px] md:text-[17px] tracking-wide px-4 sm:px-5 py-1 sm:py-1.5 rounded-[13px] shadow-sm whitespace-nowrap">
                     Most Popular
                   </span>
@@ -219,7 +226,7 @@ export default function PricingPage() {
                     alt={plan.employeesLabel}
                     width={75}
                     height={50}
-                    className="h-[42px] sm:h-[48px] w-auto object-contain"
+                    className="h-[42px] sm:h-[48px] w-auto object-contain transition-transform duration-300 group-hover:scale-110"
                     priority
                   />
                 </div>
@@ -266,7 +273,8 @@ export default function PricingPage() {
               <button
                 type="button"
                 onClick={() => handleSelectPlan(plan)}
-                className="w-full h-[52px] sm:h-[60px] rounded-[11px] text-white text-lg sm:text-[21px] font-semibold tracking-[0.04em] flex items-center justify-center transition-all duration-150 cursor-pointer shadow-sm active:scale-[0.98]"
+                disabled={loadingPlanId === plan.id}
+                className="w-full h-[52px] sm:h-[60px] rounded-[11px] text-white text-lg sm:text-[21px] font-semibold tracking-[0.04em] flex items-center justify-center btn-spring cursor-pointer shadow-sm disabled:opacity-85"
                 style={{
                   backgroundColor: plan.theme.buttonBg,
                 }}
@@ -277,14 +285,39 @@ export default function PricingPage() {
                   e.currentTarget.style.backgroundColor = plan.theme.buttonBg;
                 }}
               >
-                {plan.buttonText}
+                {loadingPlanId === plan.id ? (
+                  <span className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin w-5 h-5 text-white"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                      />
+                      <path
+                        className="opacity-95"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                    <span>Selecting...</span>
+                  </span>
+                ) : (
+                  plan.buttonText
+                )}
               </button>
             </div>
           ))}
         </div>
 
         {/* All Plans Include Section */}
-        <section className="w-full bg-white rounded-[15px] border border-black/30 shadow-[0px_3px_7px_rgba(0,0,0,0.25)] p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-center gap-6 sm:gap-8 lg:gap-12">
+        <section className="w-full bg-white rounded-[15px] border border-black/20 shadow-[0px_3px_7px_rgba(0,0,0,0.15)] hover:shadow-xl transition-all duration-300 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-center gap-6 sm:gap-8 lg:gap-12">
           {/* Left Illustration */}
           <div className="flex-shrink-0 w-full max-w-[260px] sm:max-w-[328px] h-auto flex items-center justify-center relative">
             <Image
@@ -292,7 +325,7 @@ export default function PricingPage() {
               alt="All Plans Include Protection"
               width={328}
               height={220}
-              className="w-full h-auto object-contain max-h-[220px]"
+              className="w-full h-auto object-contain max-h-[220px] transition-transform duration-300 hover:scale-[1.02]"
               priority
             />
           </div>
@@ -309,8 +342,8 @@ export default function PricingPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-y-4 gap-x-6 sm:gap-x-8">
               {/* Feature 1 */}
-              <div className="flex items-center gap-3 sm:gap-4">
-                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+              <div className="flex items-center gap-3 sm:gap-4 group">
+                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                   <svg viewBox="0 0 20 20" className="w-5 h-5" fill="none">
                     <circle cx="10" cy="10" r="9" stroke="#009937" strokeWidth="2" />
                     <path
@@ -328,8 +361,8 @@ export default function PricingPage() {
               </div>
 
               {/* Feature 2 */}
-              <div className="flex items-center gap-3 sm:gap-4">
-                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+              <div className="flex items-center gap-3 sm:gap-4 group">
+                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                   <svg viewBox="0 0 20 20" className="w-5 h-5" fill="none">
                     <circle cx="10" cy="10" r="9" stroke="#009937" strokeWidth="2" />
                     <path
@@ -347,8 +380,8 @@ export default function PricingPage() {
               </div>
 
               {/* Feature 3 */}
-              <div className="flex items-center gap-3 sm:gap-4">
-                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+              <div className="flex items-center gap-3 sm:gap-4 group">
+                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                   <svg viewBox="0 0 20 20" className="w-5 h-5" fill="none">
                     <circle cx="10" cy="10" r="9" stroke="#009937" strokeWidth="2" />
                     <path
@@ -366,8 +399,8 @@ export default function PricingPage() {
               </div>
 
               {/* Feature 4 */}
-              <div className="flex items-center gap-3 sm:gap-4">
-                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+              <div className="flex items-center gap-3 sm:gap-4 group">
+                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                   <svg viewBox="0 0 20 20" className="w-5 h-5" fill="none">
                     <circle cx="10" cy="10" r="9" stroke="#009937" strokeWidth="2" />
                     <path
@@ -385,8 +418,8 @@ export default function PricingPage() {
               </div>
 
               {/* Feature 5 */}
-              <div className="flex items-center gap-3 sm:gap-4">
-                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+              <div className="flex items-center gap-3 sm:gap-4 group">
+                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                   <svg viewBox="0 0 20 20" className="w-5 h-5" fill="none">
                     <circle cx="10" cy="10" r="9" stroke="#009937" strokeWidth="2" />
                     <path
@@ -404,8 +437,8 @@ export default function PricingPage() {
               </div>
 
               {/* Feature 6 */}
-              <div className="flex items-center gap-3 sm:gap-4">
-                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+              <div className="flex items-center gap-3 sm:gap-4 group">
+                <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                   <svg viewBox="0 0 20 20" className="w-5 h-5" fill="none">
                     <circle cx="10" cy="10" r="9" stroke="#009937" strokeWidth="2" />
                     <path
@@ -426,7 +459,7 @@ export default function PricingPage() {
         </section>
 
         {/* 14-Day Free Trial Bottom Box */}
-        <section className="w-full bg-[#F0FFF6] border-2 border-dashed border-[#2D5F3F] rounded-[15px] p-5 sm:p-7 md:p-9 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 sm:gap-8">
+        <section className="w-full bg-[#F0FFF6] border-2 border-dashed border-[#2D5F3F] hover:border-solid hover:shadow-lg transition-all duration-300 rounded-[15px] p-5 sm:p-7 md:p-9 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 sm:gap-8">
           {/* Left Side: Calendar & Trial Details */}
           <div className="flex items-start sm:items-center gap-4 sm:gap-6 md:gap-8 flex-1">
             {/* Calendar Icon */}
