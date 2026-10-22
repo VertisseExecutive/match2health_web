@@ -56,91 +56,16 @@ export default function CongratulationsPage() {
       {/* Main Container */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-14">
         <div className="w-full max-w-[580px] flex flex-col items-center text-center">
-          {/* Confetti & Success Checkmark Icon */}
-          <div className="relative w-[190px] h-[160px] sm:w-[220px] sm:h-[180px] flex items-center justify-center mb-4">
-            <svg viewBox="0 0 220 180" className="w-full h-full" fill="none">
-              {/* Confetti particles */}
-              {/* Yellow ribbon top-left */}
-              <path
-                d="M38 35C41 33 45 37 42 40C39 43 35 37 38 35Z"
-                fill="#FBBF24"
-              />
-              <path
-                d="M45 42C48 40 52 44 49 47C46 50 42 44 45 42Z"
-                fill="#F59E0B"
-              />
-              {/* Orange ribbon top-right */}
-              <path
-                d="M172 32C175 30 179 34 176 37C173 40 169 34 172 32Z"
-                fill="#F97316"
-              />
-              <path
-                d="M179 39C182 37 186 41 183 44C180 47 176 41 179 39Z"
-                fill="#EA580C"
-              />
-
-              {/* Blue diamond left */}
-              <rect
-                x="32"
-                y="58"
-                width="7"
-                height="7"
-                transform="rotate(25 32 58)"
-                fill="#38BDF8"
-              />
-              {/* Red / pink dot */}
-              <circle cx="48" cy="78" r="4.5" fill="#FB7185" />
-              {/* Green diamond right */}
-              <rect
-                x="175"
-                y="52"
-                width="6.5"
-                height="6.5"
-                transform="rotate(45 175 52)"
-                fill="#34D399"
-              />
-              {/* Teal diamond right */}
-              <rect
-                x="192"
-                y="84"
-                width="7"
-                height="7"
-                transform="rotate(15 192 84)"
-                fill="#2DD4BF"
-              />
-              {/* Yellow star / spark right */}
-              <circle cx="180" cy="68" r="3.5" fill="#FBBF24" />
-              {/* Soft dots around */}
-              <circle cx="36" cy="100" r="2.5" fill="#60A5FA" />
-              <circle cx="166" cy="115" r="3" fill="#6EE7B7" />
-
-              {/* Center Green Badge */}
-              <circle
-                cx="110"
-                cy="90"
-                r="46"
-                stroke="#10B981"
-                strokeWidth="11"
-                strokeOpacity="0.3"
-              />
-              <circle
-                cx="110"
-                cy="90"
-                r="46"
-                stroke="#047857"
-                strokeWidth="8"
-              />
-              <circle cx="110" cy="90" r="42" fill="#FFFFFF" />
-
-              {/* Checkmark */}
-              <path
-                d="M93 91L104 102L127 79"
-                stroke="#008530"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+          {/* Confetti & Success Checkmark Image */}
+          <div className="relative w-full max-w-[360px] sm:max-w-[420px] flex items-center justify-center mb-4">
+            <Image
+              src="/congs.png"
+              alt="Congratulations"
+              width={500}
+              height={221}
+              className="w-full h-auto object-contain"
+              priority
+            />
           </div>
 
           {/* Heading & Subtitle */}

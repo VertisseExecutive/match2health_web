@@ -135,50 +135,53 @@ export default function PaymentDetailsPage() {
           </div>
 
           {/* Card Logos Row */}
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 md:gap-12 mb-6 sm:mb-8 px-2">
+          <div className="flex items-center justify-center gap-5 sm:gap-8 md:gap-10 mb-6 sm:mb-8 px-2">
             {/* VISA */}
-            <div className="h-5 sm:h-6 flex items-center">
-              <svg className="h-5 sm:h-6 w-auto" viewBox="0 0 78 24" fill="none">
-                <path
-                  d="M32.5 1.5L20.8 22.5H13.6L7.4 5.8C7.1 4.5 6.2 3.4 5 2.8C3.1 1.8 0 1.2 0 1.2L0.2 0H11.4C12.9 0 14.2 1 14.5 2.6L17.2 16.5L25.3 1.5H32.5Z"
-                  fill="#1A1F71"
-                />
-                <path
-                  d="M45.5 15.8C45.5 9.8 37.3 9.4 37.4 6.7C37.4 5.9 38.2 5 40 4.8C40.9 4.7 43.4 4.6 46.2 5.9L47.3 0.9C45.8 0.4 43.8 0 41.3 0C36.3 0 32.8 2.6 32.7 6.4C32.6 9.2 35.1 10.8 37 11.7C38.9 12.6 39.5 13.2 39.5 14C39.5 15.3 37.9 15.9 36.4 15.9C33.8 15.9 32.3 15.2 31.1 14.6L30 19.8C31.5 20.5 34.3 21.1 37.1 21.1C42.4 21.1 45.5 18.6 45.5 15.8Z"
-                  fill="#1A1F71"
-                />
-                <path
-                  d="M58.9 22.5H65.2L59.7 1.5H53.9C52.7 1.5 51.7 2.2 51.3 3.3L43.8 22.5H50.4L51.7 18.8H59.8L58.9 22.5ZM53.5 13.9L56.8 4.7L58.7 13.9H53.5Z"
-                  fill="#1A1F71"
-                />
-                <path d="M78 1.5L72.8 22.5H66.6L71.8 1.5H78Z" fill="#1A1F71" />
-              </svg>
-            </div>
-
-            {/* RuPay */}
-            <div className="h-5 sm:h-6 flex items-center">
-              <span className="font-extrabold text-lg sm:text-[22px] tracking-tight text-[#0972B7] flex items-center">
-                RuPay
-                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-0.5 inline-block" viewBox="0 0 20 20" fill="none">
-                  <path d="M2 3L11 10L2 17V3Z" fill="#0972B7" />
-                  <path d="M10 3L19 10L10 17V3Z" fill="#F47721" />
-                </svg>
-              </span>
+            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center">
+              <Image
+                src="/payment-details/visa.png"
+                alt="Visa"
+                width={73}
+                height={29}
+                className="h-5 sm:h-6 md:h-7 w-auto object-contain"
+                priority
+              />
             </div>
 
             {/* Mastercard */}
-            <div className="h-6 sm:h-8 flex items-center">
-              <svg className="h-6 sm:h-8 w-auto" viewBox="0 0 48 30" fill="none">
-                <circle cx="16" cy="15" r="14" fill="#EB001B" />
-                <circle cx="32" cy="15" r="14" fill="#F79E1B" fillOpacity="0.88" />
-              </svg>
+            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center">
+              <Image
+                src="/payment-details/mastercard.png"
+                alt="Mastercard"
+                width={58}
+                height={36}
+                className="h-6 sm:h-7 md:h-8 w-auto object-contain"
+                priority
+              />
             </div>
 
             {/* AMEX */}
-            <div className="h-5 sm:h-6 flex items-center">
-              <div className="bg-[#006FCF] text-white font-black text-[11px] sm:text-[13px] tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xs shadow-xs flex items-center">
-                AMEX
-              </div>
+            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center">
+              <Image
+                src="/payment-details/Amex.png"
+                alt="American Express"
+                width={106}
+                height={29}
+                className="h-5 sm:h-6 md:h-7 w-auto object-contain"
+                priority
+              />
+            </div>
+
+            {/* PayPal */}
+            <div className="h-6 sm:h-7 md:h-8 flex items-center justify-center">
+              <Image
+                src="/payment-details/paypal.png"
+                alt="PayPal"
+                width={123}
+                height={30}
+                className="h-5 sm:h-6 md:h-7 w-auto object-contain"
+                priority
+              />
             </div>
           </div>
 
@@ -202,17 +205,15 @@ export default function PaymentDetailsPage() {
                 {/* ID Card Icon */}
                 <svg
                   className="w-5 h-5 text-[#545454] flex-shrink-0"
-                  viewBox="0 0 24 20"
+                  viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <rect x="2" y="2" width="20" height="16" rx="2" />
-                  <line x1="6" y1="6" x2="10" y2="6" />
-                  <line x1="6" y1="10" x2="10" y2="10" />
-                  <circle cx="16" cy="9" r="2.5" />
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
                 </svg>
                 <input
                   id="cardholderName"
@@ -244,16 +245,15 @@ export default function PaymentDetailsPage() {
                 {/* Credit Card Icon */}
                 <svg
                   className="w-5 h-5 text-gray-500 flex-shrink-0"
-                  viewBox="0 0 24 18"
+                  viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <rect x="2" y="1" width="20" height="16" rx="2" />
-                  <line x1="2" y1="6" x2="22" y2="6" />
-                  <line x1="5" y1="12" x2="9" y2="12" />
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <line x1="2" y1="10" x2="22" y2="10" />
                 </svg>
                 <input
                   id="cardNumber"
