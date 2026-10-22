@@ -390,7 +390,7 @@ export default function VerifyAccountPage() {
           {/* Back to Plans Link */}
           <div className="w-full flex items-center gap-3 pt-4 sm:pt-6">
             <Link
-              href="/"
+              href="/plans"
               className="flex items-center gap-2 text-[#2D5F3F] text-base sm:text-[19px] font-semibold tracking-[0.02em] hover:underline"
             >
               <svg
