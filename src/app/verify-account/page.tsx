@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { loginStart, loginSuccess } from "../../redux/slices/authSlice";
+import { loginStart, loginSuccess, loginFailure } from "../../redux/slices/authSlice";
+import { loginUser } from "../../services/api";
 
 export default function VerifyAccountPage() {
   const router = useRouter();
@@ -16,14 +17,35 @@ export default function VerifyAccountPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLocalError(null);
     dispatch(loginStart());
-    setTimeout(() => {
-      dispatch(loginSuccess({ email }));
+
+    try {
+      const res = await loginUser(email, password);
+
+      dispatch(
+        loginSuccess({
+          user: res.user,
+          access: res.access,
+          refresh: res.refresh,
+        })
+      );
+
+      // Warning if not hospital/company, but still proceed
+      if (res.user.role !== "hospital" && res.user.role !== "company") {
+        console.warn("Account is " + res.user.role + ". Subscriptions are for company/hospital accounts.");
+      }
+
       router.push("/payment-details");
-    }, 400);
+    } catch (err: any) {
+      const msg = err.message || "Login failed. Please check your credentials.";
+      setLocalError(msg);
+      dispatch(loginFailure(msg));
+    }
   };
 
   return (
@@ -83,6 +105,16 @@ export default function VerifyAccountPage() {
 
           {/* Login Form */}
           <form onSubmit={handleLogin} className="w-full flex flex-col gap-4 sm:gap-6">
+            {/* Error Message */}
+            {localError && (
+              <div className="w-full bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm sm:text-base font-medium flex items-center gap-2">
+                <svg className="w-5 h-5 flex-shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <span>{localError}</span>
+              </div>
+            )}
+
             {/* Email Field */}
             <div className="flex flex-col gap-2 w-full">
               <label

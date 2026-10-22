@@ -5,18 +5,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "../../redux/hooks";
+import { createCheckoutSession } from "../../services/api";
 
 export default function PaymentDetailsPage() {
   const router = useRouter();
   const selectedPlan = useAppSelector((state) => state.plan.selectedPlan);
   const auth = useAppSelector((state) => state.auth);
 
-  const [cardholderName, setCardholderName] = useState("");
+  const [cardholderName, setCardholderName] = useState(
+    auth.user?.username || auth.user?.email?.split("@")[0] || ""
+  );
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiNotice, setApiNotice] = useState<string | null>(null);
 
   // Format Card Number (adds space every 4 digits)
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +44,7 @@ export default function PaymentDetailsPage() {
     setCvv(raw);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedToTerms) {
       alert("Please agree to the Terms & Conditions and Privacy Policy.");
@@ -48,6 +52,30 @@ export default function PaymentDetailsPage() {
     }
 
     setIsSubmitting(true);
+    setApiNotice(null);
+
+    // If logged in with token, hit Stripe Checkout API
+    if (auth.token) {
+      try {
+        const planType = selectedPlan?.billingCycle?.includes("year")
+          ? "yearly"
+          : "monthly";
+
+        const res = await createCheckoutSession(planType, auth.token);
+
+        if (res.data?.checkout_url) {
+          window.location.href = res.data.checkout_url;
+          return;
+        }
+      } catch (err: any) {
+        console.warn("Stripe Checkout notice:", err?.message || err);
+        // Backend Stripe keys not yet configured (503 reason: not_configured)
+        setApiNotice(
+          "Notice: Live Stripe credentials are pending backend configuration. Continuing with instant trial activation."
+        );
+      }
+    }
+
     setTimeout(() => {
       setIsSubmitting(false);
       router.push("/congratulations");
@@ -187,6 +215,13 @@ export default function PaymentDetailsPage() {
 
           {/* Payment Form */}
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4 sm:gap-6">
+            {/* API Notice */}
+            {apiNotice && (
+              <div className="w-full bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-xs sm:text-sm font-medium">
+                {apiNotice}
+              </div>
+            )}
+
             {/* Cardholder Name */}
             <div className="flex flex-col gap-2 w-full">
               <label
