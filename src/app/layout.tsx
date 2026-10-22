@@ -80,9 +80,12 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/LogoSignet.png",
-    shortcut: "/LogoSignet.png",
-    apple: "/LogoSignet.png",
+    icon: [
+      { url: "/app-logo.png", sizes: "any" },
+      { url: "/app-logo.png", type: "image/png", sizes: "32x32" },
+    ],
+    shortcut: "/app-logo.png",
+    apple: "/app-logo.png",
   },
 };
 
