@@ -133,11 +133,21 @@ export async function verifyForgotOtp(
 /**
  * Reset password using the reset_token
  */
-export async function resetPassword(payload: ResetPasswordPayload): Promise<StandardApiResponse> {
+export async function resetPassword(
+  payload: ResetPasswordPayload & { email?: string; token?: string; password?: string }
+): Promise<StandardApiResponse> {
+  const body: Record<string, any> = {
+    reset_token: payload.reset_token,
+    token: payload.reset_token,
+    new_password: payload.new_password,
+    password: payload.new_password,
+    ...(payload.email ? { email: payload.email } : {}),
+  };
+
   const res = await fetch(API_ENDPOINTS.auth.resetPassword, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
   });
 
   return handleResponse<StandardApiResponse>(res);

@@ -6,20 +6,34 @@ import { AuthHeroBanner, AuthMobileLogo, AuthOtpVerification } from "../../compo
 
 /**
  * Screen 4: OTP Verification Page (Hospital / Candidate / Doctor)
- * Pixel-perfect implementation based on Figma SCREEN 4 specs (734px width, exact typography)
+ * Dynamically handles both:
+ * 1. "Verify Your Account" (Signup / Create Account flow)
+ * 2. "Verify OTP" (Forgot Password flow)
  */
 function VerifyAccountContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email") || "info@apollohospital.com";
   const roleParam = searchParams.get("role") || "hospital";
+  const flowParam = searchParams.get("flow");
+
+  const isForgotFlow =
+    flowParam === "forgot" ||
+    flowParam === "forgot-password" ||
+    flowParam === "reset-password" ||
+    flowParam === "reset";
+
+  const title = isForgotFlow ? "Verify OTP" : "Verify Your Account";
+  const subtitlePrefix = isForgotFlow
+    ? "Enter the 6-digit code sent to"
+    : "We have 6-digit OTP to";
 
   return (
     <div className="min-h-screen w-full flex bg-[#F8F8F6] text-black font-sans overflow-x-hidden">
       {/* Left Column: Hero Banner with "Verify Your Account" Envelope Artwork (Desktop Only: 554px) */}
       <AuthHeroBanner
         imageSrc="/verify otp image.png"
-        tagline="Verify Your Account"
+        tagline={title}
         showLogo={false}
       />
 
@@ -48,16 +62,16 @@ function VerifyAccountContent() {
           <AuthMobileLogo />
 
           {/* Form Header (Figma Frame 518: width 734px, gap 22.58px) */}
-          <div className="text-center w-full mb-6 sm:mb-8 md:mb-10 xl:mb-[48px]">
-            {/* Verify Your Account (Figma: font-size 38px, line-height 46px, font-weight 600) */}
+          <div className="text-center w-full mb-6 sm:mb-8 md:mb-10 xl:mb-[40px]">
+            {/* Title: 'Verify OTP' (Forgot) or 'Verify Your Account' (Signup) */}
             <h1 className="text-2xl sm:text-3xl md:text-[34px] xl:text-[38px] font-semibold text-black tracking-tight leading-[120%] xl:leading-[46px]">
-              Verify Your Account
+              {title}
             </h1>
 
-            {/* We have 6-digit OTP to info@apollohospital.com (Figma: font-size 28.23px, line-height 41px, font-weight 500) */}
-            <div className="text-base sm:text-xl md:text-[24px] xl:text-[28.23px] font-medium text-black/50 mt-2 sm:mt-3 leading-snug xl:leading-[41px]">
-              <span>We have 6-digit OTP to</span>
-              <div className="text-[#215935] font-semibold break-all">
+            {/* Subtitle: 'Enter the 6-digit code sent to' (Forgot) or 'We have 6-digit OTP to' (Signup) */}
+            <div className="text-base sm:text-xl md:text-[22px] xl:text-[26px] font-medium text-black/55 mt-2 sm:mt-3 leading-snug xl:leading-[38px]">
+              <span>{subtitlePrefix}</span>
+              <div className="text-[#215935] font-semibold break-all mt-0.5">
                 {emailParam}
               </div>
             </div>
@@ -67,7 +81,14 @@ function VerifyAccountContent() {
           <AuthOtpVerification
             initialEmail={emailParam}
             role={roleParam}
-            successRedirectHref={roleParam === "hospital" ? "/plans" : "/plans"}
+            flow={isForgotFlow ? "forgot" : "signup"}
+            successRedirectHref={
+              isForgotFlow
+                ? undefined // handled internally to go to reset-password with reset_token
+                : roleParam === "hospital"
+                ? "/plans"
+                : "/plans"
+            }
           />
         </div>
       </main>

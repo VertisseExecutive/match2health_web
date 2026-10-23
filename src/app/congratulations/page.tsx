@@ -158,7 +158,7 @@ export default function CongratulationsPage() {
           {/* Go to Dashboard Button */}
           <button
             type="button"
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/dashboard")}
             className="w-full h-[56px] sm:h-[60px] bg-[#215935] hover:bg-[#1a472a] active:scale-[0.99] text-white font-bold text-lg sm:text-[21px] tracking-[0.05em] rounded-[9.6px] shadow-[0px_4px_5px_rgba(0,0,0,0.3)] transition-all cursor-pointer flex items-center justify-center mb-8 btn-spring"
           >
             Go to Dashboard

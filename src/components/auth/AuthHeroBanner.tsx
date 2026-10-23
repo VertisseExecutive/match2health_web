@@ -9,22 +9,28 @@ interface AuthHeroBannerProps {
   imageSrc?: string;
   /** Whether to show the top logo overlay (true by default for login, false if pre-rendered in image) */
   showLogo?: boolean;
+  /** Optional custom background color */
+  bgColor?: string;
+  /** Optional custom className */
+  className?: string;
 }
 
 /**
  * Left-side hero banner for Auth screens (Desktop only: hidden lg:block)
- * Corresponds to Figma Frame 220 (554px width)
+ * Corresponds to Figma Frame 220 / Frame 2006 (554px width)
  */
 export const AuthHeroBanner: React.FC<AuthHeroBannerProps> = ({
   tagline = "Find the right talent. Build a healthier future.",
   imageSrc = "/loigin/login screen left side photo.png",
   showLogo = true,
+  bgColor = "#063824",
+  className = "",
 }) => {
   return (
     <aside
-      className="hidden lg:block relative w-[340px] xl:w-[440px] 2xl:w-[554px] min-h-screen flex-shrink-0 overflow-hidden transition-all duration-300"
+      className={`hidden lg:block relative w-[380px] lg:w-[460px] xl:w-[554px] min-h-screen flex-shrink-0 overflow-hidden transition-all duration-300 ${className}`}
       style={{
-        background: "linear-gradient(180.05deg, #033320 2.88%, #043421 100.95%)",
+        background: bgColor,
         boxShadow: "2px 0px 4px rgba(0, 0, 0, 0.25)",
       }}
     >

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { verifyOtp, resendOtp } from "../../services/auth";
+import { verifyOtp, resendOtp, verifyForgotOtp, forgotPassword } from "../../services/auth";
 import { useToast } from "../../context/ToastContext";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { loginSuccess } from "../../redux/slices/authSlice";
@@ -12,18 +13,22 @@ interface AuthOtpVerificationProps {
   initialEmail?: string;
   /** Role of user */
   role?: string;
+  /** Verification flow: 'signup' (create account) or 'forgot' (forgot password) */
+  flow?: "signup" | "forgot";
   /** Destination after successful verification */
   successRedirectHref?: string;
 }
 
 /**
  * Screen 4: OTP Verification Component (Hospital / Doctor / Candidate)
+ * Handles both "Create Account" OTP and "Forgot Password" OTP dynamically.
  * Features auto-submission on 6th digit, wrong OTP shake + reset & auto-focus first box,
  * and seamless keyboard tracking across input fields.
  */
 export function AuthOtpVerification({
   initialEmail,
   role = "hospital",
+  flow,
   successRedirectHref,
 }: AuthOtpVerificationProps) {
   const router = useRouter();
@@ -31,6 +36,14 @@ export function AuthOtpVerification({
   const dispatch = useAppDispatch();
   const selectedPlan = useAppSelector((state) => state.plan.selectedPlan);
   const { showToast } = useToast();
+
+  const flowParam = searchParams.get("flow");
+  const isForgotFlow =
+    flow === "forgot" ||
+    flowParam === "forgot" ||
+    flowParam === "forgot-password" ||
+    flowParam === "reset-password" ||
+    flowParam === "reset";
 
   const emailParam = searchParams.get("email");
   const email = (emailParam || initialEmail || "info@apollohospital.com").trim();
@@ -88,34 +101,59 @@ export function AuthOtpVerification({
       showToast("Verifying code...", "loading");
 
       try {
-        const res = await verifyOtp({
-          email,
-          otp: codeToVerify,
-        });
+        if (isForgotFlow) {
+          // ==========================================
+          // 1. FORGOT PASSWORD OTP VERIFICATION FLOW
+          // ==========================================
+          const res = await verifyForgotOtp(email, codeToVerify);
+          showToast(res.message || "Code verified successfully!", "success");
 
-        if (res.access && res.user) {
-          dispatch(
-            loginSuccess({
-              user: res.user,
-              access: res.access,
-              refresh: res.refresh || "",
-            })
-          );
-        }
-
-        showToast("Account verified successfully!", "success");
-
-        setTimeout(() => {
-          if (successRedirectHref) {
-            router.push(successRedirectHref);
-          } else if (selectedPlan) {
-            router.push("/payment-details");
-          } else if (role === "hospital") {
-            router.push("/plans");
-          } else {
-            router.push("/plans");
+          if (res.reset_token && typeof window !== "undefined") {
+            sessionStorage.setItem("m2h_reset_token", res.reset_token);
+            sessionStorage.setItem("m2h_reset_email", email);
           }
-        }, 700);
+
+          setTimeout(() => {
+            if (successRedirectHref) {
+              router.push(successRedirectHref);
+            } else {
+              router.push(
+                `/reset-password?token=${encodeURIComponent(
+                  res.reset_token || ""
+                )}&email=${encodeURIComponent(email)}`
+              );
+            }
+          }, 700);
+        } else {
+          // ==========================================
+          // 2. SIGNUP / CREATE ACCOUNT OTP VERIFICATION FLOW
+          // ==========================================
+          const res = await verifyOtp({
+            email,
+            otp: codeToVerify,
+          });
+
+          if (res.access && res.user) {
+            dispatch(
+              loginSuccess({
+                user: res.user,
+                access: res.access,
+                refresh: res.refresh || "",
+              })
+            );
+          }
+
+          showToast("Account verified successfully!", "success");
+
+          setTimeout(() => {
+            if (successRedirectHref) {
+              router.push(successRedirectHref);
+            } else {
+              const userRole = res.user?.role?.toLowerCase() || role?.toLowerCase() || "hospital";
+              router.push(`/dashboard?role=${encodeURIComponent(userRole)}`);
+            }
+          }, 700);
+        }
       } catch (err: any) {
         const msg = err.message || "Invalid or expired verification code.";
         setErrorMessage(msg);
@@ -137,7 +175,7 @@ export function AuthOtpVerification({
         setIsVerifying(false);
       }
     },
-    [dispatch, email, isVerifying, role, router, selectedPlan, showToast, successRedirectHref]
+    [dispatch, email, isForgotFlow, isVerifying, role, router, selectedPlan, showToast, successRedirectHref]
   );
 
   // Handle single digit input with auto-advance and auto-submit
@@ -217,7 +255,7 @@ export function AuthOtpVerification({
     }
   };
 
-  // Resend OTP API call
+  // Resend OTP API call (calls forgotPassword for forgot flow, resendOtp for signup flow)
   const handleResendOtp = async () => {
     if (!canResend && timeLeft > 0) {
       showToast(`Please wait ${timeLeft}s before resending code.`, "info");
@@ -230,8 +268,14 @@ export function AuthOtpVerification({
     showToast("Resending verification code...", "loading");
 
     try {
-      await resendOtp(email);
-      showToast("Verification code resent successfully!", "success");
+      if (isForgotFlow) {
+        await forgotPassword(email);
+        showToast("Reset code resent successfully!", "success");
+      } else {
+        await resendOtp(email);
+        showToast("Verification code resent successfully!", "success");
+      }
+
       setTimeLeft(45);
       setCanResend(false);
       setOtp(["", "", "", "", "", ""]);
@@ -274,7 +318,7 @@ export function AuthOtpVerification({
       )}
 
       {/* Main Verification Form (Figma Frames 535, 523, 452, 531) */}
-      <form onSubmit={handleManualSubmit} className="w-full flex flex-col items-center gap-6 sm:gap-8 md:gap-10 xl:gap-[48px]">
+      <form onSubmit={handleManualSubmit} className="w-full flex flex-col items-center gap-5 sm:gap-7 md:gap-8 xl:gap-[36px]">
         {/* Frame 535: 6 OTP Input Boxes with Auto-Tracking and Error Shake */}
         <div
           className={`w-full max-w-[632px] flex items-center justify-between gap-2 sm:gap-3.5 md:gap-5 xl:gap-[30px] ${
@@ -314,11 +358,24 @@ export function AuthOtpVerification({
         </div>
 
         {/* Resend OTP in 00:45 (Figma Frame 523) */}
-        <div className="text-center font-medium text-black/70 text-base sm:text-lg md:text-[21px] xl:text-[24.5px] leading-[150%]">
+        <div className="text-center font-medium text-black/70 text-base sm:text-lg md:text-[20px] xl:text-[23px] leading-[140%]">
           <span>Resend OTP in </span>
           <span className="text-[#215935] font-bold tracking-wide">
             {timerDisplay}
           </span>
+        </div>
+
+        {/* Didn’t receive the code? Resend OTP (Placed right above button as per design) */}
+        <div className="text-center text-sm sm:text-base md:text-[18px] xl:text-[21px] font-medium text-black tracking-[0.01em]">
+          <span>Didn’t receive the code? </span>
+          <button
+            type="button"
+            onClick={handleResendOtp}
+            disabled={isResending || (!canResend && timeLeft > 0)}
+            className="text-[#215935] font-bold hover:underline disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer inline-flex items-center gap-1"
+          >
+            {isResending ? "Resending..." : "Resend OTP"}
+          </button>
         </div>
 
         {/* Verify & Continue Button (Figma Frame 452) */}
@@ -329,7 +386,7 @@ export function AuthOtpVerification({
             style={{
               borderRadius: "94.1px",
             }}
-            className="w-full max-w-[604px] h-12 sm:h-14 md:h-[64px] lg:h-[72px] xl:h-[81px] bg-[#215935] hover:bg-[#1a472a] disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] text-white font-bold text-base sm:text-xl md:text-[24px] lg:text-[27px] xl:text-[30px] shadow-sm transition-all cursor-pointer flex items-center justify-center gap-3 btn-spring tracking-[0.02em]"
+            className="w-full max-w-[604px] h-12 sm:h-14 md:h-[64px] lg:h-[72px] xl:h-[78px] bg-[#215935] hover:bg-[#1a472a] disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] text-white font-bold text-base sm:text-xl md:text-[23px] lg:text-[26px] xl:text-[28px] shadow-sm transition-all cursor-pointer flex items-center justify-center gap-3 btn-spring tracking-[0.02em]"
           >
             {isVerifying ? (
               <>
@@ -345,17 +402,23 @@ export function AuthOtpVerification({
           </button>
         </div>
 
-        {/* Didn’t receive the code? Resend OTP (Figma Frame 531) */}
-        <div className="text-center text-sm sm:text-base md:text-[20px] xl:text-[25px] font-medium text-black tracking-[0.02em]">
-          <span>Didn’t receive the code? </span>
-          <button
-            type="button"
-            onClick={handleResendOtp}
-            disabled={isResending || (!canResend && timeLeft > 0)}
-            className="text-[#215935] font-bold hover:underline disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer inline-flex items-center gap-1"
+        {/* Back to Login link (Shown for Forgot Password flow or general navigation) */}
+        <div className="text-center pt-1">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-2 text-[#215935] font-bold text-sm sm:text-base md:text-[17px] hover:underline transition-all cursor-pointer"
           >
-            {isResending ? "Resending..." : "Resend OTP"}
-          </button>
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 text-[#215935]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Login</span>
+          </Link>
         </div>
       </form>
     </div>

@@ -48,17 +48,12 @@ export default function LoginPage() {
         })
       );
 
-      const roleDisplay = res.user.role ? res.user.role.toUpperCase() : "HOSPITAL";
+      const userRole = res.user.role?.toLowerCase() || "hospital";
+      const roleDisplay = userRole.toUpperCase();
       showToast(`Welcome back! Verified as ${roleDisplay}.`, "success");
 
       setTimeout(() => {
-        if (selectedPlan) {
-          router.push("/payment-details");
-        } else if (res.user.role === "hospital") {
-          router.push("/plans");
-        } else {
-          router.push("/plans");
-        }
+        router.push(`/dashboard?role=${encodeURIComponent(userRole)}`);
       }, 700);
     } catch (err: any) {
       const msg = err.message || "Invalid credentials. Please try again.";

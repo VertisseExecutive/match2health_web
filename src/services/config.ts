@@ -37,4 +37,14 @@ export const API_ENDPOINTS = {
     createCheckoutSession: `${API_BASE_URL}/payments/create-checkout-session/`,
     subscriptionStatus: `${API_BASE_URL}/payments/subscription/`,
   },
+  jobs: {
+    companyJobs: `${API_BASE_URL}/jobs/company/`,
+    candidateJobs: `${API_BASE_URL}/jobs/candidate/`,
+    recommendedJobs: `${API_BASE_URL}/jobs/recommended/`,
+    filters: `${API_BASE_URL}/jobs/filters/options/`,
+  },
+  profile: {
+    company: `${API_BASE_URL}/company/profile/`,
+    candidate: `${API_BASE_URL}/candidate/profile/`,
+  },
 } as const;

@@ -13,12 +13,12 @@ import { AuthHeroBanner, AuthMobileLogo, AuthSignup } from "../../components/aut
 function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const roleParam = searchParams.get("role") as UserRole | null;
-  const initialRole: UserRole =
-    roleParam === "hospital" || roleParam === "doctor" || roleParam === "candidate"
-      ? roleParam
-      : "hospital";
+  const roleParam = searchParams.get("role") as string | null;
+  type SignupRole = "candidate" | "doctor" | "hospital";
+  const initialRole: SignupRole =
+    roleParam === "doctor" || roleParam === "candidate" ? roleParam : "hospital";
 
+  const [selectedRole, setSelectedRole] = useState<SignupRole>(initialRole);
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -29,12 +29,15 @@ function SignupContent() {
     showToast("Creating your account...", "loading");
 
     try {
-      const res = await signupUser(payload);
+      const res = await signupUser({
+        ...payload,
+        role: selectedRole,
+      });
       showToast(res.message || "Account created! Please verify your email.", "success");
 
       setTimeout(() => {
         router.push(
-          `/verify-account?email=${encodeURIComponent(payload.email)}&role=${payload.role}&registered=true`
+          `/verify-account?email=${encodeURIComponent(payload.email)}&role=${selectedRole}&registered=true`
         );
       }, 700);
     } catch (err: any) {
@@ -80,7 +83,7 @@ function SignupContent() {
           <AuthMobileLogo />
 
           {/* Form Header (Figma Frame 518) */}
-          <div className="text-center w-full mb-4 sm:mb-5 lg:mb-6">
+          <div className="text-center w-full mb-3 sm:mb-4">
             <h1 className="text-2xl sm:text-3xl lg:text-[32px] xl:text-[35px] font-semibold text-black tracking-tight leading-tight">
               Create Account
             </h1>
@@ -89,12 +92,50 @@ function SignupContent() {
             </p>
           </div>
 
+          {/* Role Selection Tabs */}
+          <div className="w-full bg-black/5 p-1 rounded-xl flex items-center justify-between mb-4 border border-black/10">
+            <button
+              type="button"
+              onClick={() => setSelectedRole("hospital")}
+              className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer ${
+                selectedRole === "hospital"
+                  ? "bg-[#215935] text-white shadow-sm"
+                  : "text-black/60 hover:text-black"
+              }`}
+            >
+              Hospital
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedRole("doctor")}
+              className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer ${
+                selectedRole === "doctor"
+                  ? "bg-[#215935] text-white shadow-sm"
+                  : "text-black/60 hover:text-black"
+              }`}
+            >
+              Doctor
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedRole("candidate")}
+              className={`flex-1 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer ${
+                selectedRole === "candidate"
+                  ? "bg-[#215935] text-white shadow-sm"
+                  : "text-black/60 hover:text-black"
+              }`}
+            >
+              Candidate
+            </button>
+          </div>
+
           {/* Signup Form Component (Figma Frame 2011) */}
           <AuthSignup
+            key={selectedRole}
             onSubmit={handleSignup}
             isLoading={isLoading}
             errorMessage={errorMessage}
-            role={initialRole}
+            role={selectedRole}
             loginHref="/login"
           />
         </div>
